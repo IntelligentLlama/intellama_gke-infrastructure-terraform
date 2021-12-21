@@ -9,7 +9,7 @@ terraform {
 
 terraform {
   backend "gcs" {
-    bucket      = "dpizar_terraform_state"
+    bucket      = "tf-bucket-devops"
     prefix      = "terraform/remote-module-state"
     credentials = "./auth/terraform-svc.json"
   }
