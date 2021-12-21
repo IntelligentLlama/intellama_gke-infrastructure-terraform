@@ -6,12 +6,12 @@
 # GCP Seettings
 
 gcp_auth_file         = "./auth/terraform-svc.json" 
-gcp_project_id        = "dpizar-notepad-dev-1" 
-billing_account       = "010227-F277BC-AFD307" 
+gcp_project_id        = "ycit-021-722-devops" 
+billing_account       = "01151D-E385FB-C2691D" 
 gcp_region      = "us-central1"
 gcp_zone        = "us-central1-a"
 environment     = "dev"
-bucket_name           = "dpizar_terraform_state"
+bucket_name           = "tf-bucket-devops"
 
 #Network related
 
