@@ -9,12 +9,6 @@ output "vpc_name" {
   description = "The name of the created VPC."
 }
 
-output "vpc_name" {
-  value       = module.vpc_tformers.vpc_name
-  description = "The name of the created VPC."
-}
-
-
 output "vpc_selflink" {
   value       = module.vpc_tformers.vpc_selflink
   description = "The selflink that references the VPC object created."
