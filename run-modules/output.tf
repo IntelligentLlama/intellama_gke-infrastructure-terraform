@@ -1,8 +1,8 @@
 
-output "bucket" { 
-  value   = module.var.bucket
-  description = "bucket"  
-}
+# output "bucket" { 
+#   value   = module.var.bucket
+#   description = "bucket"  
+# }
 
 output "vpc_name" {
   value       = module.vpc_tformers.vpc_name
