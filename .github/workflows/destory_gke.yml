@@ -57,7 +57,7 @@ jobs:
           {"credentials": {"app.terraform.io": {"token": "$TFE_TOKEN"}}}
           EOF
           
-      - run: cat ./run-modules/create-gke/.terraformrc
+      - run: cat ./run-modules/.terraformrc
 
         #====================================#
         # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
