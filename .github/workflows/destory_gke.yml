@@ -38,7 +38,7 @@ jobs:
           G_PROJ: ${{ secrets.GKE_PROJECT }}
           G_B_ACT: ${{ secrets.GKE_BILL_ACC }}
         run: |
-          cat << EOF >> ./run-modules/create-gke/terraform.tfvars
+          cat << EOF >> ./run-modules/terraform.tfvars
           
           gcp_project_id  = "$G_PROJ"
           billing_account = "$G_B_ACT"
@@ -53,7 +53,7 @@ jobs:
         env:
           TFE_TOKEN: ${{ secrets.TERRAFORM_CREDENTIAL }}
         run: |
-          cat << EOF > ./run-modules/create-gke/.terraformrc
+          cat << EOF > ./run-modules/.terraformrc
           {"credentials": {"app.terraform.io": {"token": "$TFE_TOKEN"}}}
           EOF
           
