@@ -44,7 +44,7 @@ jobs:
           billing_account = "$G_B_ACT"
           EOF
           
-      - run: cat ./run-modules/create-gke/terraform.tfvars
+      - run: cat ./run-modules/terraform.tfvars
     
         #====================================#
         # Build required info for TF Container
@@ -65,11 +65,11 @@ jobs:
       - name: Terraform init
         uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
         env:
-           TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
+           TF_CLI_CONFIG_FILE: ./run-modules/.terraformrc
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
         with:
           entrypoint: terraform
-          args: -chdir=./run-modules/create-gke/ init
+          args: -chdir=./run-modules/ init
           
   terraform_destroy:
   #if prebuildcheck passes, run destroy
@@ -94,7 +94,7 @@ jobs:
           G_PROJ: ${{ secrets.GKE_PROJECT }}
           G_B_ACT: ${{ secrets.GKE_BILL_ACC }}
         run: |
-          cat << EOF >> ./run-modules/create-gke/terraform.tfvars
+          cat << EOF >> ./run-modules/terraform.tfvars
           
           gcp_project_id  = "$G_PROJ"
           billing_account = "$G_B_ACT"
@@ -106,7 +106,7 @@ jobs:
         env:
           TFE_TOKEN: ${{ secrets.TERRAFORM_CREDENTIAL }}
         run: |
-          cat << EOF > ./run-modules/create-gke/.terraformrc
+          cat << EOF > ./run-modules/.terraformrc
           {"credentials": {"app.terraform.io": {"token": "$TFE_TOKEN"}}}
           EOF
         
@@ -116,7 +116,7 @@ jobs:
       - name: Terraform init
         uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
         env:
-           TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
+           TF_CLI_CONFIG_FILE: ./run-modules/.terraformrc
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
         with:
           entrypoint: terraform
@@ -129,11 +129,11 @@ jobs:
         id: destroy
         uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
         env:
-           TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
+           TF_CLI_CONFIG_FILE: ./run-modules/.terraformrc
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}
         with:
           entrypoint: terraform
-          args: -chdir=./run-modules/create-gke/ destroy -auto-approve
+          args: -chdir=./run-modules/ destroy -auto-approve
           
       - name: Terraform destroy Status
         if: steps.destroy.outcome == 'failure'
