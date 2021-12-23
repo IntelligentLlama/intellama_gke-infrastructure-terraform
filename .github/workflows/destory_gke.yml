@@ -1,0 +1,140 @@
+# This is a basic workflow to help you get started with Actions
+
+name: TF_Destroy_dev
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      rundestroy:
+        description: 'Enter yes or no if destroy'
+        required: true
+        default: 'No'
+    
+        
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:                    
+  build:
+    name: 'TF_prepare'
+    runs-on: ubuntu-latest
+    environment: dev
+    if: ${{ github.event.inputs.rundestroy == 'yes' }}
+    
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+        # Checkout the repository to the GitHub Actions runner
+        #====================================#
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+        
+        # Build required info in TF files
+        #====================================#
+      - name: Setup gcp info
+        env:
+          G_PROJ: ${{ secrets.GKE_PROJECT }}
+          G_B_ACT: ${{ secrets.GKE_BILL_ACC }}
+        run: |
+          cat << EOF >> ./run-modules/create-gke/terraform.tfvars
+          
+          gcp_project_id  = "$G_PROJ"
+          billing_account = "$G_B_ACT"
+          EOF
+          
+      - run: cat ./run-modules/create-gke/terraform.tfvars
+    
+        #====================================#
+        # Build required info for TF Container
+        #====================================#
+      - name: Setup TF token
+        env:
+          TFE_TOKEN: ${{ secrets.TERRAFORM_CREDENTIAL }}
+        run: |
+          cat << EOF > ./run-modules/create-gke/.terraformrc
+          {"credentials": {"app.terraform.io": {"token": "$TFE_TOKEN"}}}
+          EOF
+          
+      - run: cat ./run-modules/create-gke/.terraformrc
+
+        #====================================#
+        # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+        #====================================#
+      - name: Terraform init
+        uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        env:
+           TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
+           GOOGLE_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}       
+        with:
+          entrypoint: terraform
+          args: -chdir=./run-modules/create-gke/ init
+          
+  terraform_destroy:
+  #if prebuildcheck passes, run destroy
+   name: 'TF_destroy'
+   runs-on: ubuntu-latest
+   environment: dev
+   needs: build
+   
+   if: ${{ github.event.inputs.rundestroy == 'yes' }}
+   steps:
+        #====================================#
+        # Checkout the repository to the GitHub Actions runner
+        #====================================#
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+        #====================================#
+        # Build required info in TF files
+        #====================================#
+      - name: Setup gcp info
+        env:
+          G_PROJ: ${{ secrets.GKE_PROJECT }}
+          G_B_ACT: ${{ secrets.GKE_BILL_ACC }}
+        run: |
+          cat << EOF >> ./run-modules/create-gke/terraform.tfvars
+          
+          gcp_project_id  = "$G_PROJ"
+          billing_account = "$G_B_ACT"
+          EOF
+        #====================================#
+        # Build required info for TF Container
+        #====================================#
+      - name: Setup TF token
+        env:
+          TFE_TOKEN: ${{ secrets.TERRAFORM_CREDENTIAL }}
+        run: |
+          cat << EOF > ./run-modules/create-gke/.terraformrc
+          {"credentials": {"app.terraform.io": {"token": "$TFE_TOKEN"}}}
+          EOF
+        
+        #====================================#
+        # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+        #====================================#
+      - name: Terraform init
+        uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        env:
+           TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
+           GOOGLE_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}       
+        with:
+          entrypoint: terraform
+          args: -chdir=./run-modules/create-gke/ init
+          
+        #====================================#
+        # Terraform plan : Generates an execution plan for Terraform
+        #====================================#
+      - name: Terraform plan
+        id: destroy
+        uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        env:
+           TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
+           GOOGLE_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}
+        with:
+          entrypoint: terraform
+          args: -chdir=./run-modules/create-gke/ destroy -auto-approve
+          
+      - name: Terraform destroy Status
+        if: steps.destroy.outcome == 'failure'
+        run: exit 1
