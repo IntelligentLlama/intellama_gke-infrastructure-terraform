@@ -10,7 +10,10 @@ on:
         required: true
         default: 'No'
     
-        
+
+env:
+  TAG: dpizar/gke-infrastructure:latest
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:                    
   build:
@@ -63,7 +66,8 @@ jobs:
         # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
         #====================================#
       - name: Terraform init
-        uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        #uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        uses: docker/build-push-action@v2
         env:
            TF_CLI_CONFIG_FILE: ./run-modules/.terraformrc
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
@@ -114,7 +118,8 @@ jobs:
         # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
         #====================================#
       - name: Terraform init
-        uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        # uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        uses: docker/build-push-action@v2
         env:
            TF_CLI_CONFIG_FILE: ./run-modules/.terraformrc
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
@@ -127,7 +132,8 @@ jobs:
         #====================================#
       - name: Terraform plan
         id: destroy
-        uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        # uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
+        uses: docker/build-push-action@v2
         env:
            TF_CLI_CONFIG_FILE: ./run-modules/.terraformrc
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}
