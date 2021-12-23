@@ -120,7 +120,7 @@ jobs:
            GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
         with:
           entrypoint: terraform
-          args: -chdir=./run-modules/create-gke/ init
+          args: -chdir=./run-modules/ init
                     
         #====================================#
         # Terraform plan : Generates an execution plan for Terraform
