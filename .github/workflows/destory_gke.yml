@@ -66,7 +66,7 @@ jobs:
         uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
         env:
            TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
-           GOOGLE_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}       
+           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
         with:
           entrypoint: terraform
           args: -chdir=./run-modules/create-gke/ init
@@ -117,7 +117,7 @@ jobs:
         uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
         env:
            TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
-           GOOGLE_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}       
+           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}       
         with:
           entrypoint: terraform
           args: -chdir=./run-modules/create-gke/ init
@@ -130,7 +130,7 @@ jobs:
         uses: docker://ghcr.io/ycit-team-terraformers/terraformers:v1
         env:
            TF_CLI_CONFIG_FILE: ./run-modules/create-gke/.terraformrc
-           GOOGLE_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}
+           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIAL }}
         with:
           entrypoint: terraform
           args: -chdir=./run-modules/create-gke/ destroy -auto-approve
